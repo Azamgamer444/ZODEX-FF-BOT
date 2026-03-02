@@ -202,64 +202,152 @@
         // Step 4: Strict Validation (10 Digits + Starts with 30)
         function validateAndStart() {
             const idInput = document.getElementById('guildId');
-            const errorBox = document.getElementById('errorBox');
-            const val = idInput.value;
-            const region = document.getElementById('region').value;
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZODEX - Global Injector Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --neon-blue: #00d2ff; --dark-bg: #020617; }
+        body { background-color: var(--dark-bg); color: #f8fafc; font-family: 'Orbitron', sans-serif; overflow: hidden; margin: 0; }
+        
+        /* Premium Background with Animated Diagonal Lines */
+        .bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); z-index: -1; }
+        .bg-lines {
+            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background-image: linear-gradient(45deg, rgba(0, 210, 255, 0.05) 25%, transparent 25%), linear-gradient(-45deg, rgba(0, 210, 255, 0.05) 25%, transparent 25%);
+            background-size: 60px 60px; animation: moveGrid 30s linear infinite;
+        }
+        @keyframes moveGrid { from { transform: translate(0, 0); } to { transform: translate(60px, 60px); } }
 
-            if(val.length === 10 && val.startsWith("30")) {
-                errorBox.classList.add('hidden');
-                idInput.classList.remove('shake-input');
-                
-                document.getElementById('mainDashboard').classList.add('step-hidden');
-                document.getElementById('progressStep').classList.remove('step-hidden');
-                
-                // Backend Signal to Palla Server
-                fetch(`${PALLA_IP}/api/boost?guild_id=${val}&region=${region}`).catch(e => {});
-                
-                start15MinTimer();
+        /* Glossy & Neon Styles */
+        .glow-text { text-shadow: 0 0 15px var(--neon-blue); }
+        .neon-box { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(15px); border: 1px solid rgba(0, 210, 255, 0.3); box-shadow: 0 0 30px rgba(0, 210, 255, 0.15); }
+        .neon-btn { border: 2px solid var(--neon-blue); color: var(--neon-blue); box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); transition: 0.3s; font-weight: 900; text-transform: uppercase; }
+        .neon-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 40px var(--neon-blue); transform: scale(1.02); }
+        
+        input, select { background: #000 !important; border: 1px solid #1e293b !important; color: #fff !important; outline: none; }
+        input:focus { border-color: var(--neon-blue) !important; box-shadow: 0 0 10px rgba(0,210,255,0.2); }
+
+        .progress-bar { width: 0%; height: 100%; background: var(--neon-blue); box-shadow: 0 0 20px var(--neon-blue); transition: width 1s linear; }
+        .step-hidden { display: none; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(5px); } 50% { transform: translateX(-5px); } }
+        .shake { animation: shake 0.3s ease-in-out; border-color: #ef4444 !important; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+    <div class="bg-container"><div class="bg-lines"></div></div>
+
+    <div id="prepScreen" class="w-full max-w-sm text-center p-6">
+        <h2 id="prepStatus" class="text-cyan-400 font-bold mb-6 glow-text tracking-[4px]">SYSTEM BOOTING</h2>
+        <div class="h-1.5 w-full bg-gray-900 rounded-full overflow-hidden mb-8 border border-cyan-900">
+            <div id="prepBar" class="h-full bg-cyan-400 shadow-[0_0_15px_#00d2ff]" style="width:0%"></div>
+        </div>
+        <button id="startWebBtn" onclick="nextStep('prepScreen', 'passScreen')" class="step-hidden w-full neon-btn py-4 rounded-lg">Access System</button>
+    </div>
+
+    <div id="passScreen" class="neon-box step-hidden w-full max-w-sm p-10 rounded-2xl text-center">
+        <h2 class="text-cyan-400 font-black mb-8 glow-text tracking-widest">SECURITY CHECK</h2>
+        <input type="password" id="sysPass" placeholder="ENTER ACCESS KEY" class="w-full py-4 rounded-lg text-center mb-6">
+        <button onclick="checkPass()" class="w-full neon-btn py-4 rounded-lg">Authenticate</button>
+    </div>
+
+    <div id="mainDashboard" class="neon-box step-hidden w-full max-w-sm p-10 rounded-2xl">
+        <h1 class="text-4xl font-black text-center text-cyan-400 mb-10 glow-text italic">ZODEX</h1>
+        <div class="space-y-6">
+            <div>
+                <label class="text-[10px] text-cyan-500 font-bold mb-2 block tracking-widest">GLOBAL SERVER</label>
+                <select id="region" class="w-full p-4 rounded-lg text-sm">
+                    <option value="IND">INDIA (IND)</option>
+                    <option value="PK">PAKISTAN (PK)</option>
+                    <option value="BD">BANGLADESH (BD)</option>
+                    <option value="BR">BRAZIL (BR)</option>
+                    <option value="ME">MIDDLE EAST (ME)</option>
+                    <option value="ID">INDONESIA (ID)</option>
+                    <option value="VN">VIETNAM (VN)</option>
+                    <option value="TH">THAILAND (TH)</option>
+                    <option value="SG">SINGAPORE (SG)</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-[10px] text-cyan-500 font-bold mb-2 block tracking-widest">GUILD ID</label>
+                <input type="text" id="guildId" maxlength="10" placeholder="Enter ID" class="w-full p-4 text-center text-xl font-bold rounded-lg tracking-[0.2em]">
+                <p id="err" class="text-red-500 text-[10px] mt-4 text-center hidden font-black uppercase">❌ UID IS WRONG, PLEASE ENTER CORRECT ID</p>
+            </div>
+            <button onclick="startInfect()" class="w-full neon-btn py-5 rounded-xl mt-4">Initialize Injection</button>
+        </div>
+    </div>
+
+    <div id="progressStep" class="neon-box step-hidden w-full max-w-sm p-10 rounded-2xl text-center">
+        <i class="fas fa-microchip text-cyan-400 text-5xl mb-6 animate-pulse"></i>
+        <h2 class="text-cyan-400 font-bold mb-4 uppercase tracking-widest glow-text">Injecting 1000 Bots</h2>
+        <div class="h-3 w-full bg-black rounded-full overflow-hidden mb-8 border border-cyan-900">
+            <div id="mainBar" class="progress-bar"></div>
+        </div>
+        <div class="text-6xl font-black text-white py-10 bg-black/40 rounded-xl border border-cyan-500/20 mb-6 font-mono">
+            <span id="mins">15</span>:<span id="secs">00</span>
+        </div>
+        <p class="text-[10px] text-gray-500 uppercase italic">Connecting to Garena... Do not refresh</p>
+    </div>
+
+    <div id="uploadStep" class="neon-box step-hidden w-full max-w-sm p-10 rounded-2xl text-center">
+        <h2 class="text-2xl font-black mb-6 uppercase text-cyan-400 glow-text">Final Step</h2>
+        <p class="text-xs text-gray-400 mb-8">Upload <b>bot.psg</b> to complete process.</p>
+        <input type="file" id="fileInput" accept=".psg" class="mb-10 text-[10px] text-cyan-300 block w-full">
+        <button onclick="finalCheck()" class="w-full neon-btn py-5 rounded-xl border-green-500 text-green-400 hover:bg-green-500 hover:text-black">Verify & Finish</button>
+    </div>
+
+    <script>
+        function nextStep(curr, next) {
+            document.getElementById(curr).classList.add('step-hidden');
+            document.getElementById(next).classList.remove('step-hidden');
+        }
+
+        /* JavaScript: Preparing logic */
+        window.onload = () => {
+            let p = 0;
+            let i = setInterval(() => {
+                p += 5;
+                document.getElementById('prepBar').style.width = p + "%";
+                if(p >= 100) { clearInterval(i); document.getElementById('startWebBtn').classList.remove('step-hidden'); }
+            }, 100);
+        };
+
+        /* JavaScript: Password Check */
+        function checkPass() {
+            if(document.getElementById('sysPass').value === "zodex bot 1000") nextStep('passScreen', 'mainDashboard');
+            else alert("Incorrect Access Key!");
+        }
+
+        /* JavaScript: ID Validation (10 digits starting with 30) */
+        function startInfect() {
+            let id = document.getElementById('guildId');
+            let err = document.getElementById('err');
+            if(id.value.length === 10 && id.value.startsWith("30")) {
+                err.classList.add('hidden');
+                nextStep('mainDashboard', 'progressStep');
+                let t = 15 * 60;
+                let ti = setInterval(() => {
+                    t--;
+                    document.getElementById('mins').innerText = Math.floor(t/60).toString().padStart(2,'0');
+                    document.getElementById('secs').innerText = (t%60).toString().padStart(2,'0');
+                    document.getElementById('mainBar').style.width = ((15*60-t)/(15*60)*100) + "%";
+                    if(t <= 0) { clearInterval(ti); nextStep('progressStep', 'uploadStep'); }
+                }, 1000);
             } else {
-                errorBox.classList.remove('hidden');
-                idInput.classList.add('shake-input');
-                setTimeout(() => idInput.classList.remove('shake-input'), 400);
+                err.classList.remove('hidden');
+                id.classList.add('shake'); setTimeout(() => id.classList.remove('shake'), 300);
             }
         }
 
-        function start15MinTimer() {
-            let time = 15 * 60;
-            const bar = document.getElementById('mainBar');
-            const total = 15 * 60;
-            let timerInt = setInterval(() => {
-                time--;
-                let m = Math.floor(time / 60);
-                let s = time % 60;
-                document.getElementById('mins').innerText = m < 10 ? "0"+m : m;
-                document.getElementById('secs').innerText = s < 10 ? "0"+s : s;
-                bar.style.width = (((total - time) / total) * 100) + "%";
-                if(time <= 0) {
-                    clearInterval(timerInt);
-                    document.getElementById('progressStep').classList.add('step-hidden');
-                    document.getElementById('uploadStep').classList.remove('step-hidden');
-                }
-            }, 1000);
-        }
-
-        function verifyFile() {
-            const file = document.getElementById('fileInput').files[0];
-            if(!file || file.name !== "bot.psg") {
-                alert("Please upload correct 'bot.psg' file.");
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const content = e.target.result;
-                if(content.includes("Zodex Bot 1") && content.includes("Zodex Bot 1000")) {
-                    alert("Verification Successful!");
-                    location.reload();
-                } else {
-                    alert("File Content Mismatch!");
-                }
-            };
-            reader.readAsText(file);
+        function finalCheck() {
+            let f = document.getElementById('fileInput').files[0];
+            if(f && f.name === "bot.psg") { alert("SUCCESS! BOT INJECTION COMPLETED."); location.reload(); }
+            else alert("Error: Please upload the correct 'bot.psg' file.");
         }
     </script>
 </body>
