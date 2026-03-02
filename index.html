@@ -201,8 +201,7 @@
 
         // Step 4: Strict Validation (10 Digits + Starts with 30)
         function validateAndStart() {
-            const idInput = document.getElementById('guildId');
-<!DOCTYPE html>
+            const idInput = document.getElementById('guildId');<!DOCTYPE html>
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
@@ -213,7 +212,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
         :root { --neon-blue: #00d2ff; --dark-bg: #020617; }
-        body { background-color: var(--dark-bg); color: #f8fafc; font-family: 'Orbitron', sans-serif; overflow: hidden; margin: 0; }
+        body { background-color: var(--dark-bg); color: #f8fafc; font-family: 'Orbitron', sans-serif; overflow: hidden; margin: 0; padding: 0; }
         
         /* Premium Background with Animated Diagonal Lines */
         .bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); z-index: -1; }
@@ -226,15 +225,15 @@
 
         /* Glossy & Neon Styles */
         .glow-text { text-shadow: 0 0 15px var(--neon-blue); }
-        .neon-box { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(15px); border: 1px solid rgba(0, 210, 255, 0.3); box-shadow: 0 0 30px rgba(0, 210, 255, 0.15); }
-        .neon-btn { border: 2px solid var(--neon-blue); color: var(--neon-blue); box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); transition: 0.3s; font-weight: 900; text-transform: uppercase; }
+        .neon-box { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(0, 210, 255, 0.3); box-shadow: 0 0 35px rgba(0, 210, 255, 0.2); }
+        .neon-btn { border: 2px solid var(--neon-blue); color: var(--neon-blue); box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); transition: 0.3s; font-weight: 900; text-transform: uppercase; cursor: pointer; }
         .neon-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 40px var(--neon-blue); transform: scale(1.02); }
         
-        input, select { background: #000 !important; border: 1px solid #1e293b !important; color: #fff !important; outline: none; }
+        input, select { background: #000 !important; border: 1px solid #1e293b !important; color: #fff !important; outline: none; width: 100%; }
         input:focus { border-color: var(--neon-blue) !important; box-shadow: 0 0 10px rgba(0,210,255,0.2); }
 
         .progress-bar { width: 0%; height: 100%; background: var(--neon-blue); box-shadow: 0 0 20px var(--neon-blue); transition: width 1s linear; }
-        .step-hidden { display: none; }
+        .step-hidden { display: none !important; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(5px); } 50% { transform: translateX(-5px); } }
         .shake { animation: shake 0.3s ease-in-out; border-color: #ef4444 !important; }
     </style>
@@ -252,7 +251,7 @@
 
     <div id="passScreen" class="neon-box step-hidden w-full max-w-sm p-10 rounded-2xl text-center">
         <h2 class="text-cyan-400 font-black mb-8 glow-text tracking-widest">SECURITY CHECK</h2>
-        <input type="password" id="sysPass" placeholder="ENTER ACCESS KEY" class="w-full py-4 rounded-lg text-center mb-6">
+        <input type="password" id="sysPass" placeholder="ENTER ACCESS KEY" class="py-4 rounded-lg text-center mb-6">
         <button onclick="checkPass()" class="w-full neon-btn py-4 rounded-lg">Authenticate</button>
     </div>
 
@@ -261,7 +260,7 @@
         <div class="space-y-6">
             <div>
                 <label class="text-[10px] text-cyan-500 font-bold mb-2 block tracking-widest">GLOBAL SERVER</label>
-                <select id="region" class="w-full p-4 rounded-lg text-sm">
+                <select id="region" class="p-4 rounded-lg text-sm">
                     <option value="IND">INDIA (IND)</option>
                     <option value="PK">PAKISTAN (PK)</option>
                     <option value="BD">BANGLADESH (BD)</option>
@@ -275,7 +274,7 @@
             </div>
             <div>
                 <label class="text-[10px] text-cyan-500 font-bold mb-2 block tracking-widest">GUILD ID</label>
-                <input type="text" id="guildId" maxlength="10" placeholder="Enter ID" class="w-full p-4 text-center text-xl font-bold rounded-lg tracking-[0.2em]">
+                <input type="text" id="guildId" maxlength="10" placeholder="Enter ID" class="p-4 text-center text-xl font-bold rounded-lg tracking-[0.2em]">
                 <p id="err" class="text-red-500 text-[10px] mt-4 text-center hidden font-black uppercase">❌ UID IS WRONG, PLEASE ENTER CORRECT ID</p>
             </div>
             <button onclick="startInfect()" class="w-full neon-btn py-5 rounded-xl mt-4">Initialize Injection</button>
@@ -307,26 +306,29 @@
             document.getElementById(next).classList.remove('step-hidden');
         }
 
-        /* JavaScript: Preparing logic */
         window.onload = () => {
             let p = 0;
             let i = setInterval(() => {
                 p += 5;
-                document.getElementById('prepBar').style.width = p + "%";
-                if(p >= 100) { clearInterval(i); document.getElementById('startWebBtn').classList.remove('step-hidden'); }
+                if(document.getElementById('prepBar')) {
+                    document.getElementById('prepBar').style.width = p + "%";
+                }
+                if(p >= 100) { 
+                    clearInterval(i); 
+                    document.getElementById('startWebBtn').classList.remove('step-hidden'); 
+                }
             }, 100);
         };
 
-        /* JavaScript: Password Check */
         function checkPass() {
-            if(document.getElementById('sysPass').value === "zodex bot 1000") nextStep('passScreen', 'mainDashboard');
+            const p = document.getElementById('sysPass').value;
+            if(p === "zodex bot 1000") nextStep('passScreen', 'mainDashboard');
             else alert("Incorrect Access Key!");
         }
 
-        /* JavaScript: ID Validation (10 digits starting with 30) */
         function startInfect() {
-            let id = document.getElementById('guildId');
-            let err = document.getElementById('err');
+            const id = document.getElementById('guildId');
+            const err = document.getElementById('err');
             if(id.value.length === 10 && id.value.startsWith("30")) {
                 err.classList.add('hidden');
                 nextStep('mainDashboard', 'progressStep');
@@ -340,12 +342,13 @@
                 }, 1000);
             } else {
                 err.classList.remove('hidden');
-                id.classList.add('shake'); setTimeout(() => id.classList.remove('shake'), 300);
+                id.classList.add('shake'); 
+                setTimeout(() => id.classList.remove('shake'), 300);
             }
         }
 
         function finalCheck() {
-            let f = document.getElementById('fileInput').files[0];
+            const f = document.getElementById('fileInput').files[0];
             if(f && f.name === "bot.psg") { alert("SUCCESS! BOT INJECTION COMPLETED."); location.reload(); }
             else alert("Error: Please upload the correct 'bot.psg' file.");
         }
