@@ -112,6 +112,21 @@
         body { background-color: var(--dark-bg); color: #f8fafc; font-family: 'Orbitron', sans-serif; overflow: hidden; margin: 0; padding: 0; }
         
         .bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); z-index: -1; }
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZODEX - Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --neon-blue: #00d2ff; --dark-bg: #020617; }
+        body { background-color: var(--dark-bg); color: #f8fafc; font-family: 'Orbitron', sans-serif; overflow: hidden; margin: 0; padding: 0; height: 100vh; width: 100vw; }
+        
+        /* Premium Background */
+        .bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); z-index: -1; }
         .bg-lines {
             position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
             background-image: linear-gradient(45deg, rgba(0, 210, 255, 0.05) 25%, transparent 25%), linear-gradient(-45deg, rgba(0, 210, 255, 0.05) 25%, transparent 25%);
@@ -119,23 +134,23 @@
         }
         @keyframes moveGrid { from { transform: translate(0, 0); } to { transform: translate(60px, 60px); } }
 
+        /* No Overlap Fix */
+        .step-hidden { display: none !important; opacity: 0; visibility: hidden; pointer-events: none; position: absolute; }
+        .screen-active { display: block !important; opacity: 1; visibility: visible; position: relative; z-index: 50; }
+
         .glow-text { text-shadow: 0 0 15px var(--neon-blue); }
-        .neon-box { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(0, 210, 255, 0.3); box-shadow: 0 0 35px rgba(0, 210, 255, 0.2); }
-        .neon-btn { border: 2px solid var(--neon-blue); color: var(--neon-blue); box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); transition: 0.3s; font-weight: 900; text-transform: uppercase; cursor: pointer; width: 100%; }
-        .neon-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 40px var(--neon-blue); transform: scale(1.02); }
+        .neon-box { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(0, 210, 255, 0.3); box-shadow: 0 0 35px rgba(0, 210, 255, 0.2); }
+        .neon-btn { border: 2px solid var(--neon-blue); color: var(--neon-blue); transition: 0.3s; font-weight: 900; text-transform: uppercase; cursor: pointer; width: 100%; }
+        .neon-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 40px var(--neon-blue); }
         
-        input, select { background: #000 !important; border: 1px solid #1e293b !important; color: #fff !important; outline: none; width: 100%; padding: 1rem; border-radius: 0.5rem; }
-        .progress-bar { width: 0%; height: 100%; background: var(--neon-blue); box-shadow: 0 0 20px var(--neon-blue); transition: width 1s linear; }
-        .step-hidden { display: none !important; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(5px); } 50% { transform: translateX(-5px); } }
-        .shake { animation: shake 0.3s ease-in-out; border-color: #ef4444 !important; }
+        input, select { background: #000 !important; border: 1px solid #1e293b !important; color: #fff !important; outline: none; width: 100%; padding: 1rem; border-radius: 0.5rem; text-align: center; }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="flex items-center justify-center p-4">
     <div class="bg-container"><div class="bg-lines"></div></div>
 
-    <div id="prepScreen" class="w-full max-w-sm text-center">
-        <h2 id="prepStatus" class="text-cyan-400 font-bold mb-6 glow-text tracking-[4px]">SYSTEM BOOTING</h2>
+    <div id="prepScreen" class="w-full max-w-sm text-center screen-active">
+        <h2 class="text-cyan-400 font-bold mb-6 glow-text tracking-[4px]">SYSTEM BOOTING</h2>
         <div class="h-1.5 w-full bg-gray-900 rounded-full overflow-hidden mb-8 border border-cyan-900">
             <div id="prepBar" class="h-full bg-cyan-400" style="width:0%"></div>
         </div>
@@ -144,7 +159,7 @@
 
     <div id="passScreen" class="neon-box step-hidden w-full max-w-sm p-8 rounded-2xl text-center">
         <h2 class="text-cyan-400 font-black mb-8 glow-text tracking-widest">SECURITY</h2>
-        <input type="password" id="sysPass" placeholder="ENTER ACCESS KEY" class="text-center mb-6">
+        <input type="password" id="sysPass" placeholder="ENTER ACCESS KEY" class="mb-6">
         <button onclick="checkPass()" class="neon-btn py-4 rounded-lg">Authenticate</button>
     </div>
 
@@ -158,8 +173,8 @@
                 <option value="BR">BRAZIL (BR)</option>
                 <option value="ME">MIDDLE EAST (ME)</option>
             </select>
-            <input type="text" id="guildId" maxlength="10" placeholder="Enter Guild ID" class="text-center font-bold tracking-widest">
-            <p id="err" class="text-red-500 text-[10px] text-center hidden font-black uppercase">❌ UID IS WRONG, PLEASE ENTER CORRECT ID</p>
+            <input type="text" id="guildId" maxlength="10" placeholder="Enter Guild ID" class="font-bold tracking-widest">
+            <p id="err" class="text-red-500 text-[10px] text-center hidden font-black">❌ UID IS WRONG, PLEASE ENTER CORRECT ID</p>
             <button onclick="startInfect()" class="neon-btn py-5 rounded-xl">Initialize Injection</button>
         </div>
     </div>
@@ -167,7 +182,7 @@
     <div id="progressStep" class="neon-box step-hidden w-full max-w-sm p-8 rounded-2xl text-center">
         <h2 class="text-cyan-400 font-bold mb-4 tracking-widest glow-text">INJECTING BOTS</h2>
         <div class="h-2 w-full bg-black rounded-full overflow-hidden mb-8 border border-cyan-900">
-            <div id="mainBar" class="progress-bar"></div>
+            <div id="mainBar" class="h-full bg-cyan-400 transition-all duration-1000" style="width:0%"></div>
         </div>
         <div class="text-6xl font-black text-white py-10 bg-black/40 rounded-xl border border-cyan-500/20 mb-4 font-mono">
             <span id="mins">15</span>:<span id="secs">00</span>
@@ -181,37 +196,29 @@
         <button onclick="finalCheck()" class="neon-btn py-4 rounded-lg">Verify & Finish</button>
     </div>
 
-    <div id="successPage" class="neon-box step-hidden w-full max-w-sm p-8 rounded-2xl text-center animate-pulse">
+    <div id="successPage" class="neon-box step-hidden w-full max-w-sm p-8 rounded-2xl text-center">
         <i class="fas fa-check-circle text-green-500 text-6xl mb-6"></i>
-        <h2 class="text-2xl font-black text-white mb-2 tracking-tighter">1000 BOTS UPLOADED</h2>
-        <p class="text-cyan-400 text-xs font-bold mb-8 glow-text uppercase">Your Zodex is fully accessible & fine</p>
-        
+        <h2 class="text-2xl font-black text-white mb-2">1000 BOTS UPLOADED</h2>
+        <p class="text-cyan-400 text-[10px] font-bold mb-8 glow-text">Your Zodex is fully accessible & fine</p>
         <div class="bg-black/50 p-6 rounded-xl border border-cyan-500/30 text-left space-y-4">
-            <div class="flex justify-between items-center">
-                <span class="text-[10px] text-gray-400 uppercase">Bot Status:</span>
-                <span class="text-green-400 font-black text-xs tracking-widest">ALIVE</span>
-            </div>
-            <div class="flex justify-between items-center">
-                <span class="text-[10px] text-gray-400 uppercase">Guild Status:</span>
-                <span class="text-cyan-400 font-black text-xs tracking-widest">JOINED</span>
-            </div>
+            <div class="flex justify-between items-center"><span class="text-[10px] text-gray-400">BOT STATUS:</span><span class="text-green-400 font-black text-xs">ALIVE</span></div>
+            <div class="flex justify-between items-center"><span class="text-[10px] text-gray-400">GUILD STATUS:</span><span class="text-cyan-400 font-black text-xs">JOINED</span></div>
         </div>
-        <p class="mt-8 text-[9px] text-gray-600 uppercase italic">Injection Protocol Complete</p>
     </div>
 
     <script>
         const PALLA_IP = "http://YOUR_SERVER_IP:8080"; 
 
-        function nextStep(c, n) {
-            document.getElementById(c).classList.add('step-hidden');
-            document.getElementById(n).classList.remove('step-hidden');
+        function nextStep(curr, next) {
+            document.getElementById(curr).classList.replace('screen-active', 'step-hidden');
+            document.getElementById(next).classList.replace('step-hidden', 'screen-active');
         }
 
         window.onload = () => {
             let p = 0;
             let i = setInterval(() => {
                 p += 5;
-                if(document.getElementById('prepBar')) document.getElementById('prepBar').style.width = p + "%";
+                document.getElementById('prepBar').style.width = p + "%";
                 if(p >= 100) { clearInterval(i); document.getElementById('startWebBtn').classList.remove('step-hidden'); }
             }, 100);
         };
@@ -243,12 +250,8 @@
 
         function finalCheck() {
             const f = document.getElementById('fileInput').files[0];
-            if(f && f.name === "bot.psg") {
-                // NO ALERT POPUP - DIRECT SUCCESS SCREEN
-                nextStep('uploadStep', 'successPage');
-            } else {
-                alert("Please upload correct bot.psg file.");
-            }
+            if(f && f.name === "bot.psg") nextStep('uploadStep', 'successPage');
+            else alert("Please upload correct bot.psg file.");
         }
     </script>
 </body>
