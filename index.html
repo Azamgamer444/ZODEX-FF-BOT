@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZODEX - Premium Glory Booster</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #050b18; color: #e2e8f0; font-family: 'Orbitron', sans-serif; overflow: hidden; }
+        .geo-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(45deg, #050b18 25%, #0a192f 25%, #0a192f 50%, #050b18 50%, #050b18 75%, #0a192f 75%, #0a192f 100%); background-size: 100px 100px; opacity: 0.1; z-index: -1; }
+        .neon-border { border: 2px solid #00d2ff; box-shadow: 0 0 15px #00d2ff; }
+        .neon-text { text-shadow: 0 0 10px #00d2ff; }
+        .glass-card { background: rgba(10, 25, 47, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(0, 210, 255, 0.2); }
+        .step-hidden { display: none; }
+        .loader-bar { width: 0%; height: 4px; background: #00d2ff; box-shadow: 0 0 10px #00d2ff; transition: width 0.3s; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+    <div class="geo-bg"></div>
+
+    <div id="prepScreen" class="text-center w-full max-w-md p-8">
+        <h2 id="prepStatus" class="text-cyan-400 font-bold mb-4 animate-pulse">WEBSITE PREPARATION...</h2>
+        <div class="w-full bg-gray-900 rounded-full h-1 mb-8">
+            <div id="prepBar" class="loader-bar"></div>
+        </div>
+        <button id="startWebBtn" onclick="showPassScreen()" class="step-hidden w-full neon-border bg-cyan-500 text-black font-black py-4 rounded-xl uppercase tracking-widest hover:bg-cyan-400 transition-all">
+            START WEBSITE
+        </button>
+    </div>
+
+    <div id="passScreen" class="glass-card step-hidden max-w-md w-full p-8 rounded-3xl text-center">
+        <i class="fas fa-lock text-cyan-400 text-4xl mb-4"></i>
+        <h2 class="text-xl font-bold mb-6 neon-text">SYSTEM ACCESS PASS</h2>
+        <input type="password" id="sysPass" placeholder="ENTER PASSWORD..." class="w-full bg-black/50 border border-cyan-900 rounded-lg py-3 px-4 focus:outline-none focus:border-cyan-400 text-cyan-100 text-center mb-4">
+        <button onclick="checkPassword()" class="w-full bg-cyan-900/40 border border-cyan-500 py-3 rounded-lg font-bold hover:bg-cyan-500 hover:text-black transition-all">UNLOCK SYSTEM</button>
+    </div>
+
+    <div id="mainDashboard" class="glass-card step-hidden max-w-lg w-full p-8 rounded-3xl relative overflow-hidden">
+        <div id="step1">
+            <div class="text-center mb-8">
+                <h1 class="text-5xl font-black neon-text text-cyan-400">ZODEX</h1>
+                <p class="text-[10px] tracking-[0.4em] text-blue-300">AUTHORIZED ACCESS ONLY</p>
+            </div>
+            <div class="space-y-5">
+                <label class="block text-xs font-bold text-cyan-400 mb-2 uppercase">Guild ID</label>
+                <div class="relative">
+                    <span class="absolute left-4 top-3.5 text-cyan-500 font-bold border-r border-cyan-800 pr-2">30</span>
+                    <input type="text" id="rawId" maxlength="8" placeholder="XXXX XXXX" class="w-full bg-black/50 border border-cyan-900 rounded-lg py-3 pl-14 pr-4 focus:outline-none focus:border-cyan-400 text-cyan-100">
+                </div>
+                <button onclick="startFinalProcess()" class="w-full neon-border bg-cyan-900/20 hover:bg-cyan-500 hover:text-black py-4 rounded-xl font-bold transition-all uppercase mt-4">Initialize Injection</button>
+            </div>
+        </div>
+        
+        </div>
+
+    <script>
+        // वेबसाइट प्रिपरेशन लॉजिक
+        window.onload = () => {
+            let progress = 0;
+            const bar = document.getElementById('prepBar');
+            const status = document.getElementById('prepStatus');
+            const startBtn = document.getElementById('startWebWebBtn');
+
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 15);
+                if(progress > 100) progress = 100;
+                bar.style.width = progress + "%";
+
+                if(progress >= 100) {
+                    clearInterval(interval);
+                    status.innerText = "WEBSITE READY!";
+                    document.getElementById('startWebBtn').classList.remove('step-hidden');
+                }
+            }, 400);
+        };
+
+        function showPassScreen() {
+            document.getElementById('prepScreen').classList.add('step-hidden');
+            document.getElementById('passScreen').classList.remove('step-hidden');
+        }
+
+        function checkPassword() {
+            const pass = document.getElementById('sysPass').value;
+            // आपका बताया हुआ पासवर्ड
+            if(pass === "zodex bot 1000") {
+                document.getElementById('passScreen').classList.add('step-hidden');
+                document.getElementById('mainDashboard').classList.remove('step-hidden');
+            } else {
+                alert("गलत पासवर्ड! सर जी, सही पासवर्ड डालिए।");
+            }
+        }
+
+        function startFinalProcess() {
+            const rawId = document.getElementById('rawId').value;
+            if(rawId.length < 8) return alert("8 अंक की आईडी डालें!");
+            alert("Injection Started! अब 15 मिनट इंतज़ार करें।");
+            // यहाँ से आपका पुराना टाइमर और सब2अनलॉक लॉजिक शुरू होगा
+        }
+    </script>
+</body>
+</html>
