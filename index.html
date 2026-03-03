@@ -8,347 +8,139 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-blue: #00d2ff; --dark-bg: #020617; }
-        body { background-color: var(--dark-bg); color: #f8fafc; font-family: 'Orbitron', sans-serif; overflow: hidden; margin: 0; padding: 0; height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; position: relative; }
+        :root { --neon: #00d2ff; --bg: #020617; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { margin: 0; padding: 0; background-color: var(--bg); overflow: hidden; height: 100%; width: 100%; font-family: 'Orbitron', sans-serif; }
         
-        /* Background remains constant */
-        .bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); z-index: -1; }
-        .bg-lines {
-            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background-image: linear-gradient(45deg, rgba(0, 210, 255, 0.05) 25%, transparent 25%), linear-gradient(-45deg, rgba(0, 210, 255, 0.05) 25%, transparent 25%);
-            background-size: 60px 60px; animation: moveGrid 30s linear infinite;
-        }
-        @keyframes moveGrid { from { transform: translate(0, 0); } to { transform: translate(60px, 60px); } }
+        /* Background Layer */
+        .bg-fixed { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle, #0f172a 0%, #020617 100%); }
+        .bg-pattern { position: absolute; width: 200%; height: 200%; background-image: linear-gradient(45deg, rgba(0,210,255,0.02) 25%, transparent 25%), linear-gradient(-45deg, rgba(0,210,255,0.02) 25%, transparent 25%); background-size: 40px 40px; animation: move 40s linear infinite; }
+        @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(0, 0); } }
 
-        /* Container for absolute centering */
-        #app-root { width: 100%; max-width: 360px; z-index: 10; display: flex; justify-content: center; }
-
-        .neon-box { background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(25px); border: 1px solid rgba(0, 210, 255, 0.4); box-shadow: 0 0 40px rgba(0, 210, 255, 0.25); padding: 2rem; border-radius: 1.5rem; text-align: center; width: 100%; animation: zoomIn 0.3s ease-out; }
-        @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-
-        .neon-btn { border: 2px solid var(--neon-blue); color: var(--neon-blue); padding: 1rem; width: 100%; font-weight: 900; text-transform: uppercase; cursor: pointer; border-radius: 0.75rem; margin-top: 1rem; transition: 0.2s; }
-        .neon-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px var(--neon-blue); }
+        /* Centering Container Fix */
+        #main-wrapper { height: 100%; width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; position: relative; z-index: 10; }
         
-        input, select { background: #000 !important; border: 1px solid #1e293b !important; color: #fff !important; width: 100%; padding: 1rem; border-radius: 0.5rem; text-align: center; margin-bottom: 1rem; outline: none; }
+        .card { background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(15px); border: 1px solid rgba(0, 210, 255, 0.3); padding: 2.5rem 1.5rem; border-radius: 1.5rem; width: 100%; max-width: 340px; text-align: center; box-shadow: 0 0 40px rgba(0, 210, 255, 0.1); animation: zoomIn 0.3s ease-out; position: relative; }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        .btn { border: 2px solid var(--neon); color: var(--neon); padding: 1rem; width: 100%; font-weight: 900; cursor: pointer; border-radius: 0.75rem; transition: 0.2s; margin-top: 1rem; text-transform: uppercase; font-family: 'Orbitron'; background: transparent; }
+        .btn:active { transform: scale(0.98); background: var(--neon); color: #000; }
+        
+        input, select { background: #000 !important; border: 1px solid #1e293b !important; color: #fff !important; width: 100%; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; text-align: center; outline: none; font-family: 'Orbitron'; font-size: 14px; }
     </style>
 </head>
 <body>
-    <div class="bg-container"><div class="bg-lines"></div></div>
+    <div class="bg-fixed"><div class="bg-pattern"></div></div>
 
-    <div id="app-root">
-        </div>
+    <div id="main-wrapper">
+        <div id="app-content" class="w-full flex justify-center"></div>
+    </div>
 
     <script>
-        const PALLA_IP = "http://YOUR_SERVER_IP:8080";
-        const root = document.getElementById('app-root');
+        const container = document.getElementById('app-content');
+        const PALLA_API = "http://YOUR_SERVER_IP:8080";
 
-        // Logic to clear and render new screen (Fixes Double Screen)
-        function render(html) {
-            root.innerHTML = ''; // Delete everything inside root
-            root.innerHTML = html; // Put new screen
+        // Cleaner Function to prevent double screens
+        function renderView(html) {
+            container.innerHTML = ''; 
+            container.innerHTML = html;
         }
 
-        // --- SCREEN TEMPLATES ---
-
-        function showStep1() {
-            render(`
-                <div class="w-full text-center">
-                    <h2 class="text-cyan-400 font-bold mb-6 tracking-[4px]">SYSTEM BOOTING</h2>
-                    <div class="h-1.5 w-full bg-gray-900 rounded-full overflow-hidden mb-8 border border-cyan-900">
-                        <div id="bootBar" class="h-full bg-cyan-400" style="width:0%; transition: width 0.1s;"></div>
+        // STEP 1: BOOTING
+        function showBoot() {
+            renderView(`
+                <div class="text-center w-full max-w-[260px]">
+                    <h2 class="text-cyan-400 font-bold mb-6 tracking-[4px] text-xs">SYSTEM BOOTING...</h2>
+                    <div class="h-1 w-full bg-gray-900 rounded-full overflow-hidden border border-cyan-900/40">
+                        <div id="pBar" class="h-full bg-cyan-400 shadow-[0_0_15px_#00d2ff]" style="width:0%"></div>
                     </div>
-                    <button id="bootBtn" onclick="showStep2()" style="display:none" class="neon-btn">Access System</button>
                 </div>
             `);
             let p = 0;
             let i = setInterval(() => {
                 p += 5;
-                const bar = document.getElementById('bootBar');
+                const bar = document.getElementById('pBar');
                 if(bar) bar.style.width = p + "%";
-                if(p >= 100) { 
-                    clearInterval(i); 
-                    if(document.getElementById('bootBtn')) document.getElementById('bootBtn').style.display = 'block';
-                }
+                if(p >= 100) { clearInterval(i); setTimeout(showLogin, 400); }
             }, 100);
         }
 
-        function showStep2() {
-            render(`
-                <div class="neon-box">
-                    <h2 class="text-cyan-400 font-black mb-8 tracking-widest uppercase">Security Check</h2>
-                    <input type="password" id="sysPass" placeholder="ENTER ACCESS KEY">
-                    <button onclick="checkPass()" class="neon-btn">Authenticate</button>
+        // STEP 2: SECURITY
+        function showLogin() {
+            renderView(`
+                <div class="card">
+                    <h2 class="text-cyan-400 font-black mb-8 tracking-widest text-lg">SECURITY ACCESS</h2>
+                    <input type="password" id="sk" placeholder="ENTER ACCESS KEY">
+                    <button onclick="valLogin()" class="btn">Authenticate</button>
                 </div>
             `);
         }
 
-        function checkPass() {
-            const val = document.getElementById('sysPass').value;
-            if(val === "zodex bot 1000") showStep3();
-            else alert("Invalid Key!");
+        function valLogin() {
+            if(document.getElementById('sk').value === "zodex bot 1000") showDash();
+            else alert("ACCESS DENIED!");
         }
 
-        function showStep3() {
-            render(`
-                <div class="neon-box">
-                    <h1 class="text-3xl font-black text-center text-cyan-400 mb-8 italic">ZODEX</h1>
-                    <select id="region">
-                        <option value="IND">INDIA (IND)</option>
-                        <option value="PK">PAKISTAN (PK)</option>
-                        <option value="BD">BANGLADESH (BD)</option>
-                    </select>
-                    <input type="text" id="guildId" maxlength="10" placeholder="Enter Guild ID">
-                    <p id="err" class="text-red-500 text-[10px] mb-4 hidden font-black">❌ INVALID UID</p>
-                    <button onclick="startInjection()" class="neon-btn">Initialize</button>
+        // STEP 3: DASHBOARD
+        function showDash() {
+            renderView(`
+                <div class="card">
+                    <h1 class="text-3xl font-black text-cyan-400 mb-8 italic">ZODEX</h1>
+                    <select id="reg"><option>INDIA (IND)</option><option>PAKISTAN (PK)</option></select>
+                    <input type="text" id="gid" maxlength="10" placeholder="GUILD ID (10 DIGITS)">
+                    <button onclick="initInject()" class="btn">Initialize</button>
                 </div>
             `);
         }
 
-        function startInjection() {
-            const id = document.getElementById('guildId').value;
+        function initInject() {
+            const id = document.getElementById('gid').value;
             if(id.length === 10 && id.startsWith("30")) {
-                fetch(`${PALLA_IP}/api/boost?id=${id}`).catch(e => {});
-                showStep4();
-            } else {
-                document.getElementById('err').classList.remove('hidden');
-            }
+                fetch(`${PALLA_API}/api/boost?id=${id}`).catch(() => {});
+                showTimer();
+            } else alert("Invalid ID! Must be 10 digits starting with 30.");
         }
 
-        function showStep4() {
-            render(`
-                <div class="neon-box">
-                    <h2 class="text-cyan-400 font-bold mb-4 tracking-widest">INJECTING BOTS</h2>
-                    <div class="h-2 w-full bg-black rounded-full overflow-hidden mb-8 border border-cyan-900">
-                        <div id="mainBar" class="h-full bg-cyan-400" style="width:0%; transition: width 1s linear;"></div>
+        // STEP 4: TIMER (SPEED FIXED)
+        function showTimer() {
+            renderView(`
+                <div class="card">
+                    <h2 class="text-cyan-400 font-bold mb-4 tracking-widest text-[10px] uppercase">Injecting 1000 Bots...</h2>
+                    <div class="text-6xl font-black text-white py-12 bg-black/40 rounded-2xl border border-cyan-500/10 mb-6 font-mono tracking-tighter shadow-inner">
+                        <span id="m">15</span>:<span id="s">00</span>
                     </div>
-                    <div class="text-6xl font-black text-white py-10 bg-black/40 rounded-xl border border-cyan-500/20 mb-4 font-mono">
-                        <span id="mins">15</span>:<span id="secs">00</span>
-                    </div>
-                    <p class="text-[10px] text-gray-500 italic uppercase">Connecting to Garena...</p>
+                    <p class="text-[9px] text-gray-500 italic tracking-widest uppercase">Encryption: AES-256 | Do Not Refresh</p>
                 </div>
             `);
             let t = 15 * 60;
-            let ti = setInterval(() => {
+            // Speed Fix: 1000ms = 1 Second Real Time
+            const timerInt = setInterval(() => {
                 t--;
-                const m = document.getElementById('mins'), s = document.getElementById('secs'), b = document.getElementById('mainBar');
-                if(m) m.innerText = Math.floor(t/60).toString().padStart(2,'0');
-                if(s) s.innerText = (t%60).toString().padStart(2,'0');
-                if(b) b.style.width = ((15*60-t)/(15*60)*100) + "%";
-                if(t <= 0) { clearInterval(ti); showStep5(); }
-            }, 100); // Testing speed: set to 1000 for real 1 sec
+                const min = document.getElementById('m'), sec = document.getElementById('s');
+                if(!min) { clearInterval(timerInt); return; }
+                min.innerText = Math.floor(t/60).toString().padStart(2,'0');
+                sec.innerText = (t%60).toString().padStart(2,'0');
+                if(t <= 0) { clearInterval(timerInt); showSuccess(); }
+            }, 1000); 
         }
 
-        function showStep5() {
-            render(`
-                <div class="neon-box">
-                    <h2 class="text-xl font-black mb-6 text-cyan-400 uppercase">Verification</h2>
-                    <p class="text-[10px] text-gray-400 mb-8">Upload <b>bot.psg</b> to finish.</p>
-                    <input type="file" id="fileInp" accept=".psg" class="mb-4">
-                    <button onclick="finalVerify()" class="neon-btn">Verify & Finish</button>
-                </div>
-            `);
-        }
-
-        function finalVerify() {
-            const f = document.getElementById('fileInp').files[0];
-            if(f && f.name === "bot.psg") showStep6();
-            else alert("Upload correct bot.psg file!");
-        }
-
-        function showStep6() {
-            render(`
-                <div class="neon-box">
+        // STEP 5: SUCCESS
+        function showSuccess() {
+            renderView(`
+                <div class="card">
                     <i class="fas fa-check-circle text-green-500 text-6xl mb-6"></i>
-                    <h2 class="text-xl font-black text-white mb-2">1000 BOTS UPLOADED</h2>
-                    <p class="text-cyan-400 text-[10px] font-bold mb-8 uppercase">Your Zodex is fully accessible & fine</p>
-                    <div class="bg-black/50 p-6 rounded-xl border border-cyan-500/30 text-left space-y-4">
-                        <div class="flex justify-between items-center"><span class="text-[10px] text-gray-400">BOT STATUS:</span><span class="text-green-400 font-black text-xs">ALIVE</span></div>
-                        <div class="flex justify-between items-center"><span class="text-[10px] text-gray-400">GUILD STATUS:</span><span class="text-cyan-400 font-black text-xs">JOINED</span></div>
+                    <h2 class="text-xl font-black text-white mb-2 tracking-tighter uppercase">Process Complete</h2>
+                    <p class="text-cyan-400 text-[10px] font-bold mb-10 uppercase tracking-widest">1000 BOTS SUCCESSFULLY LOADED</p>
+                    <div class="bg-black/60 p-5 rounded-xl border border-cyan-500/20 text-left space-y-4">
+                        <div class="flex justify-between items-center text-[10px] font-bold"><span class="text-gray-500">BOT STATUS:</span><span class="text-green-400">ALIVE</span></div>
+                        <div class="flex justify-between items-center text-[10px] font-bold"><span class="text-gray-500">SERVER:</span><span class="text-cyan-400">STABLE</span></div>
                     </div>
                 </div>
             `);
         }
 
-        // Start the app
-        showStep1();
-    </script>
-</body>
-</html>
-            <div id="mainBar" class="progress-bar"></div>
-        </div>
-        <div class="text-6xl font-black text-white py-10 bg-black/40 rounded-xl border border-cyan-500/20 mb-6 font-mono">
-            <span id="mins">15</span>:<span id="secs">00</span>
-        </div>
-        <p class="text-[10px] text-gray-500 uppercase italic">Connecting to Garena... Do not refresh</p>
-    </div>
-
-    <div id="uploadStep" class="neon-box step-hidden w-full max-w-sm p-10 rounded-2xl text-center">
-        <h2 class="text-2xl font-black mb-6 uppercase text-cyan-400 glow-text">Final Step</h2>
-        <p class="text-xs text-gray-400 mb-8">Upload bot.psg to complete.</p>
-        <input type="file" id="fileInput" accept=".psg" class="mb-10 text-[10px] text-cyan-300">
-        <button onclick="finalCheck()" class="neon-btn py-5 rounded-xl border-green-500 text-green-400">Verify & Finish</button>
-    </div>
-
-    <script>
-        // --- यहाँ अपनी PALLA लिंक डालें ---
-        const PALLA_IP = "http://YOUR_SERVER_IP:8080"; 
-
-        function nextStep(c, n) {
- <!DOCTYPE html>
-<html lang="hi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZODEX - Global Glory</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
-    <style>
-        :root { --neon-blue: #00d2ff; --dark-bg: #020617; }
-        body { background-color: var(--dark-bg); color: #f8fafc; font-family: 'Orbitron', sans-serif; overflow: hidden; margin: 0; padding: 0; }
-        
-        .bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); z-index: -1; }
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZODEX - Premium</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
-    <style>
-        :root { --neon-blue: #00d2ff; --dark-bg: #020617; }
-        body { background-color: var(--dark-bg); color: #f8fafc; font-family: 'Orbitron', sans-serif; overflow: hidden; margin: 0; padding: 0; height: 100vh; width: 100vw; }
-        
-        /* Premium Background */
-        .bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); z-index: -1; }
-        .bg-lines {
-            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background-image: linear-gradient(45deg, rgba(0, 210, 255, 0.05) 25%, transparent 25%), linear-gradient(-45deg, rgba(0, 210, 255, 0.05) 25%, transparent 25%);
-            background-size: 60px 60px; animation: moveGrid 30s linear infinite;
-        }
-        @keyframes moveGrid { from { transform: translate(0, 0); } to { transform: translate(60px, 60px); } }
-
-        /* No Overlap Fix */
-        .step-hidden { display: none !important; opacity: 0; visibility: hidden; pointer-events: none; position: absolute; }
-        .screen-active { display: block !important; opacity: 1; visibility: visible; position: relative; z-index: 50; }
-
-        .glow-text { text-shadow: 0 0 15px var(--neon-blue); }
-        .neon-box { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(0, 210, 255, 0.3); box-shadow: 0 0 35px rgba(0, 210, 255, 0.2); }
-        .neon-btn { border: 2px solid var(--neon-blue); color: var(--neon-blue); transition: 0.3s; font-weight: 900; text-transform: uppercase; cursor: pointer; width: 100%; }
-        .neon-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 40px var(--neon-blue); }
-        
-        input, select { background: #000 !important; border: 1px solid #1e293b !important; color: #fff !important; outline: none; width: 100%; padding: 1rem; border-radius: 0.5rem; text-align: center; }
-    </style>
-</head>
-<body class="flex items-center justify-center p-4">
-    <div class="bg-container"><div class="bg-lines"></div></div>
-
-    <div id="prepScreen" class="w-full max-w-sm text-center screen-active">
-        <h2 class="text-cyan-400 font-bold mb-6 glow-text tracking-[4px]">SYSTEM BOOTING</h2>
-        <div class="h-1.5 w-full bg-gray-900 rounded-full overflow-hidden mb-8 border border-cyan-900">
-            <div id="prepBar" class="h-full bg-cyan-400" style="width:0%"></div>
-        </div>
-        <button id="startWebBtn" onclick="nextStep('prepScreen', 'passScreen')" class="step-hidden neon-btn py-4 rounded-lg">Access System</button>
-    </div>
-
-    <div id="passScreen" class="neon-box step-hidden w-full max-w-sm p-8 rounded-2xl text-center">
-        <h2 class="text-cyan-400 font-black mb-8 glow-text tracking-widest">SECURITY</h2>
-        <input type="password" id="sysPass" placeholder="ENTER ACCESS KEY" class="mb-6">
-        <button onclick="checkPass()" class="neon-btn py-4 rounded-lg">Authenticate</button>
-    </div>
-
-    <div id="mainDashboard" class="neon-box step-hidden w-full max-w-sm p-8 rounded-2xl">
-        <h1 class="text-3xl font-black text-center text-cyan-400 mb-8 glow-text italic">ZODEX</h1>
-        <div class="space-y-6">
-            <select id="region">
-                <option value="IND">INDIA (IND)</option>
-                <option value="PK">PAKISTAN (PK)</option>
-                <option value="BD">BANGLADESH (BD)</option>
-                <option value="BR">BRAZIL (BR)</option>
-                <option value="ME">MIDDLE EAST (ME)</option>
-            </select>
-            <input type="text" id="guildId" maxlength="10" placeholder="Enter Guild ID" class="font-bold tracking-widest">
-            <p id="err" class="text-red-500 text-[10px] text-center hidden font-black">❌ UID IS WRONG, PLEASE ENTER CORRECT ID</p>
-            <button onclick="startInfect()" class="neon-btn py-5 rounded-xl">Initialize Injection</button>
-        </div>
-    </div>
-
-    <div id="progressStep" class="neon-box step-hidden w-full max-w-sm p-8 rounded-2xl text-center">
-        <h2 class="text-cyan-400 font-bold mb-4 tracking-widest glow-text">INJECTING BOTS</h2>
-        <div class="h-2 w-full bg-black rounded-full overflow-hidden mb-8 border border-cyan-900">
-            <div id="mainBar" class="h-full bg-cyan-400 transition-all duration-1000" style="width:0%"></div>
-        </div>
-        <div class="text-6xl font-black text-white py-10 bg-black/40 rounded-xl border border-cyan-500/20 mb-4 font-mono">
-            <span id="mins">15</span>:<span id="secs">00</span>
-        </div>
-    </div>
-
-    <div id="uploadStep" class="neon-box step-hidden w-full max-w-sm p-8 rounded-2xl text-center">
-        <h2 class="text-xl font-black mb-6 uppercase text-cyan-400 glow-text">Final Verification</h2>
-        <p class="text-[10px] text-gray-400 mb-8">Upload <b>bot.psg</b> to finish.</p>
-        <input type="file" id="fileInput" accept=".psg" class="mb-8 text-[10px] text-cyan-300">
-        <button onclick="finalCheck()" class="neon-btn py-4 rounded-lg">Verify & Finish</button>
-    </div>
-
-    <div id="successPage" class="neon-box step-hidden w-full max-w-sm p-8 rounded-2xl text-center">
-        <i class="fas fa-check-circle text-green-500 text-6xl mb-6"></i>
-        <h2 class="text-2xl font-black text-white mb-2">1000 BOTS UPLOADED</h2>
-        <p class="text-cyan-400 text-[10px] font-bold mb-8 glow-text">Your Zodex is fully accessible & fine</p>
-        <div class="bg-black/50 p-6 rounded-xl border border-cyan-500/30 text-left space-y-4">
-            <div class="flex justify-between items-center"><span class="text-[10px] text-gray-400">BOT STATUS:</span><span class="text-green-400 font-black text-xs">ALIVE</span></div>
-            <div class="flex justify-between items-center"><span class="text-[10px] text-gray-400">GUILD STATUS:</span><span class="text-cyan-400 font-black text-xs">JOINED</span></div>
-        </div>
-    </div>
-
-    <script>
-        const PALLA_IP = "http://YOUR_SERVER_IP:8080"; 
-
-        function nextStep(curr, next) {
-            document.getElementById(curr).classList.replace('screen-active', 'step-hidden');
-            document.getElementById(next).classList.replace('step-hidden', 'screen-active');
-        }
-
-        window.onload = () => {
-            let p = 0;
-            let i = setInterval(() => {
-                p += 5;
-                document.getElementById('prepBar').style.width = p + "%";
-                if(p >= 100) { clearInterval(i); document.getElementById('startWebBtn').classList.remove('step-hidden'); }
-            }, 100);
-        };
-
-        function checkPass() {
-            if(document.getElementById('sysPass').value === "zodex bot 1000") nextStep('passScreen', 'mainDashboard');
-            else alert("Incorrect Access Key!");
-        }
-
-        function startInfect() {
-            const id = document.getElementById('guildId');
-            if(id.value.length === 10 && id.value.startsWith("30")) {
-                document.getElementById('err').classList.add('hidden');
-                fetch(`${PALLA_IP}/api/boost?guild_id=${id.value}`).catch(e => {});
-                nextStep('mainDashboard', 'progressStep');
-                let t = 15 * 60;
-                let ti = setInterval(() => {
-                    t--;
-                    document.getElementById('mins').innerText = Math.floor(t/60).toString().padStart(2,'0');
-                    document.getElementById('secs').innerText = (t%60).toString().padStart(2,'0');
-                    document.getElementById('mainBar').style.width = ((15*60-t)/(15*60)*100) + "%";
-                    if(t <= 0) { clearInterval(ti); nextStep('progressStep', 'uploadStep'); }
-                }, 1000);
-            } else {
-                document.getElementById('err').classList.remove('hidden');
-                id.classList.add('shake'); setTimeout(() => id.classList.remove('shake'), 300);
-            }
-        }
-
-        function finalCheck() {
-            const f = document.getElementById('fileInput').files[0];
-            if(f && f.name === "bot.psg") nextStep('uploadStep', 'successPage');
-            else alert("Please upload correct bot.psg file.");
-        }
+        // Start App
+        showBoot();
     </script>
 </body>
 </html>
