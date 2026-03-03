@@ -3,57 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZODEX PRO</title>
+    <title>ZODEX PRO - FIXED</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #00d2ff; --bg: #020617; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; background-color: var(--bg); overflow: hidden; height: 100%; width: 100%; font-family: 'Orbitron', sans-serif; }
+        :root { --neon-blue: #00d2ff; --dark-bg: #020617; }
         
-        /* Background Layer */
-        .bg-fixed { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle, #0f172a 0%, #020617 100%); }
-        .bg-pattern { position: absolute; width: 200%; height: 200%; background-image: linear-gradient(45deg, rgba(0,210,255,0.02) 25%, transparent 25%), linear-gradient(-45deg, rgba(0,210,255,0.02) 25%, transparent 25%); background-size: 40px 40px; animation: move 40s linear infinite; }
-        @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(0, 0); } }
+        /* बैकग्राउंड को फिक्स किया गया ताकि वह रिपीट न हो */
+        body { 
+            background: var(--dark-bg); 
+            color: #f8fafc; 
+            font-family: 'Orbitron', sans-serif; 
+            overflow: hidden; 
+            margin: 0; height: 100vh; width: 100vw; 
+            display: flex; align-items: center; justify-content: center; 
+        }
+        
+        .bg-container { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); 
+            z-index: -1; 
+        }
 
-        /* Centering Container Fix */
-        #main-wrapper { height: 100%; width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; position: relative; z-index: 10; }
-        
-        .card { background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(15px); border: 1px solid rgba(0, 210, 255, 0.3); padding: 2.5rem 1.5rem; border-radius: 1.5rem; width: 100%; max-width: 340px; text-align: center; box-shadow: 0 0 40px rgba(0, 210, 255, 0.1); animation: zoomIn 0.3s ease-out; position: relative; }
+        /* ट्रायंगुलर पैटर्न */
+        .bg-lines {
+            position: absolute; width: 100%; height: 100%;
+            background-image: linear-gradient(45deg, rgba(0, 210, 255, 0.03) 25%, transparent 25%), 
+                              linear-gradient(-45deg, rgba(0, 210, 255, 0.03) 25%, transparent 25%);
+            background-size: 60px 60px;
+        }
+
+        /* बॉक्स स्टाइल */
+        .neon-box { 
+            background: rgba(15, 23, 42, 0.98); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(0, 210, 255, 0.4); 
+            box-shadow: 0 0 40px rgba(0, 210, 255, 0.25); 
+            padding: 2.5rem 1.5rem; 
+            border-radius: 1.5rem; 
+            width: 90%; max-width: 350px; 
+            text-align: center;
+            animation: zoomIn 0.3s ease;
+        }
+
         @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-        .btn { border: 2px solid var(--neon); color: var(--neon); padding: 1rem; width: 100%; font-weight: 900; cursor: pointer; border-radius: 0.75rem; transition: 0.2s; margin-top: 1rem; text-transform: uppercase; font-family: 'Orbitron'; background: transparent; }
-        .btn:active { transform: scale(0.98); background: var(--neon); color: #000; }
+        .neon-btn { 
+            border: 2px solid var(--neon-blue); color: var(--neon-blue); 
+            padding: 1rem; width: 100%; font-weight: 900; 
+            text-transform: uppercase; cursor: pointer; border-radius: 0.75rem; 
+            margin-top: 1.5rem; transition: 0.2s; 
+        }
+        .neon-btn:active { background: var(--neon-blue); color: #000; }
         
-        input, select { background: #000 !important; border: 1px solid #1e293b !important; color: #fff !important; width: 100%; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; text-align: center; outline: none; font-family: 'Orbitron'; font-size: 14px; }
+        input, select { 
+            background: #000 !important; border: 1px solid #1e293b !important; 
+            color: #fff !important; width: 100%; padding: 1rem; 
+            border-radius: 0.5rem; text-align: center; margin-bottom: 1rem; outline: none; 
+        }
     </style>
 </head>
 <body>
-    <div class="bg-fixed"><div class="bg-pattern"></div></div>
+    <div class="bg-container"><div class="bg-lines"></div></div>
 
-    <div id="main-wrapper">
-        <div id="app-content" class="w-full flex justify-center"></div>
-    </div>
+    <div id="app-root" class="w-full flex justify-center"></div>
 
     <script>
-        const container = document.getElementById('app-content');
-        const PALLA_API = "http://YOUR_SERVER_IP:8080";
+        const root = document.getElementById('app-root');
+        const PALLA_IP = "http://YOUR_SERVER_IP:8080"; 
 
-        // Cleaner Function to prevent double screens
-        function renderView(html) {
-            container.innerHTML = ''; 
-            container.innerHTML = html;
+        // यह फंक्शन पुरानी स्क्रीन को हटाकर नई स्क्रीन लोड करेगा (Fixes Repeat Issue)
+        function render(html) {
+            root.innerHTML = `<div class="neon-box">${html}</div>`;
         }
 
-        // STEP 1: BOOTING
+        // STEP 1: SYSTEM BOOTING
         function showBoot() {
-            renderView(`
-                <div class="text-center w-full max-w-[260px]">
-                    <h2 class="text-cyan-400 font-bold mb-6 tracking-[4px] text-xs">SYSTEM BOOTING...</h2>
-                    <div class="h-1 w-full bg-gray-900 rounded-full overflow-hidden border border-cyan-900/40">
-                        <div id="pBar" class="h-full bg-cyan-400 shadow-[0_0_15px_#00d2ff]" style="width:0%"></div>
-                    </div>
+            render(`
+                <h2 class="text-cyan-400 font-bold mb-8 tracking-[4px] text-xs uppercase">System Booting</h2>
+                <div class="h-1.5 w-full bg-gray-900 rounded-full overflow-hidden border border-cyan-900">
+                    <div id="pBar" class="h-full bg-cyan-400" style="width:0%"></div>
                 </div>
             `);
             let p = 0;
@@ -61,18 +90,16 @@
                 p += 5;
                 const bar = document.getElementById('pBar');
                 if(bar) bar.style.width = p + "%";
-                if(p >= 100) { clearInterval(i); setTimeout(showLogin, 400); }
+                if(p >= 100) { clearInterval(i); setTimeout(showLogin, 500); }
             }, 100);
         }
 
-        // STEP 2: SECURITY
+        // STEP 2: SECURITY CHECK
         function showLogin() {
-            renderView(`
-                <div class="card">
-                    <h2 class="text-cyan-400 font-black mb-8 tracking-widest text-lg">SECURITY ACCESS</h2>
-                    <input type="password" id="sk" placeholder="ENTER ACCESS KEY">
-                    <button onclick="valLogin()" class="btn">Authenticate</button>
-                </div>
+            render(`
+                <h2 class="text-cyan-400 font-black mb-10 tracking-widest uppercase">Security Check</h2>
+                <input type="password" id="sk" placeholder="ENTER ACCESS KEY">
+                <button onclick="valLogin()" class="neon-btn">Authenticate</button>
             `);
         }
 
@@ -83,63 +110,46 @@
 
         // STEP 3: DASHBOARD
         function showDash() {
-            renderView(`
-                <div class="card">
-                    <h1 class="text-3xl font-black text-cyan-400 mb-8 italic">ZODEX</h1>
-                    <select id="reg"><option>INDIA (IND)</option><option>PAKISTAN (PK)</option></select>
-                    <input type="text" id="gid" maxlength="10" placeholder="GUILD ID (10 DIGITS)">
-                    <button onclick="initInject()" class="btn">Initialize</button>
-                </div>
+            render(`
+                <h1 class="text-3xl font-black text-cyan-400 mb-10 italic">ZODEX</h1>
+                <select id="reg">
+                    <option>INDIA (IND)</option>
+                    <option>PAKISTAN (PK)</option>
+                    <option>BANGLADESH (BD)</option>
+                </select>
+                <input type="text" id="gid" maxlength="10" placeholder="GUILD ID (10 DIGITS)">
+                <button onclick="startInfect()" class="neon-btn">Execute Injection</button>
             `);
         }
 
-        function initInject() {
+        function startInfect() {
             const id = document.getElementById('gid').value;
             if(id.length === 10 && id.startsWith("30")) {
-                fetch(`${PALLA_API}/api/boost?id=${id}`).catch(() => {});
+                fetch(`${PALLA_IP}/api/boost?id=${id}`).catch(() => {});
                 showTimer();
-            } else alert("Invalid ID! Must be 10 digits starting with 30.");
+            } else alert("Invalid ID!");
         }
 
-        // STEP 4: TIMER (SPEED FIXED)
+        // STEP 4: TIMER
         function showTimer() {
-            renderView(`
-                <div class="card">
-                    <h2 class="text-cyan-400 font-bold mb-4 tracking-widest text-[10px] uppercase">Injecting 1000 Bots...</h2>
-                    <div class="text-6xl font-black text-white py-12 bg-black/40 rounded-2xl border border-cyan-500/10 mb-6 font-mono tracking-tighter shadow-inner">
-                        <span id="m">15</span>:<span id="s">00</span>
-                    </div>
-                    <p class="text-[9px] text-gray-500 italic tracking-widest uppercase">Encryption: AES-256 | Do Not Refresh</p>
+            render(`
+                <h2 class="text-cyan-400 font-bold mb-4 tracking-widest text-xs">INJECTING BOTS...</h2>
+                <div class="text-6xl font-black text-white py-10 bg-black/40 rounded-xl border border-cyan-500/20 mb-4 font-mono">
+                    <span id="m">15</span>:<span id="s">00</span>
                 </div>
+                <p class="text-[10px] text-gray-500 italic uppercase">DO NOT REFRESH</p>
             `);
             let t = 15 * 60;
-            // Speed Fix: 1000ms = 1 Second Real Time
-            const timerInt = setInterval(() => {
+            const ti = setInterval(() => {
                 t--;
                 const min = document.getElementById('m'), sec = document.getElementById('s');
-                if(!min) { clearInterval(timerInt); return; }
+                if(!min) { clearInterval(ti); return; }
                 min.innerText = Math.floor(t/60).toString().padStart(2,'0');
                 sec.innerText = (t%60).toString().padStart(2,'0');
-                if(t <= 0) { clearInterval(timerInt); showSuccess(); }
-            }, 1000); 
+                if(t <= 0) clearInterval(ti);
+            }, 1000);
         }
 
-        // STEP 5: SUCCESS
-        function showSuccess() {
-            renderView(`
-                <div class="card">
-                    <i class="fas fa-check-circle text-green-500 text-6xl mb-6"></i>
-                    <h2 class="text-xl font-black text-white mb-2 tracking-tighter uppercase">Process Complete</h2>
-                    <p class="text-cyan-400 text-[10px] font-bold mb-10 uppercase tracking-widest">1000 BOTS SUCCESSFULLY LOADED</p>
-                    <div class="bg-black/60 p-5 rounded-xl border border-cyan-500/20 text-left space-y-4">
-                        <div class="flex justify-between items-center text-[10px] font-bold"><span class="text-gray-500">BOT STATUS:</span><span class="text-green-400">ALIVE</span></div>
-                        <div class="flex justify-between items-center text-[10px] font-bold"><span class="text-gray-500">SERVER:</span><span class="text-cyan-400">STABLE</span></div>
-                    </div>
-                </div>
-            `);
-        }
-
-        // Start App
         showBoot();
     </script>
 </body>
